@@ -1,0 +1,29 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "skillful"
+version = "0.1.0"
+description = "Agent-agnostic security & code-review skills for coding assistants"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { file = "LICENSE" }
+dependencies = [
+    "click>=8.1",
+    "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+]
+
+[project.scripts]
+skillful = "skillful.cli:cli"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/skillful"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

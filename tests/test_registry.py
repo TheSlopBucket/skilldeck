@@ -1,0 +1,56 @@
+import textwrap
+
+import pytest
+
+from skillful.registry import SkillError, discover_skills, load_skill
+
+
+def _write_skill(root, name, *, agents="[claude, codex, kiro]", body="hi"):
+    skill_dir = root / name
+    skill_dir.mkdir()
+    (skill_dir / "meta.yaml").write_text(
+        textwrap.dedent(
+            f"""
+            name: {name}
+            description: a test skill
+            category: testing
+            version: 0.1.0
+            supported-agents: {agents}
+            """
+        ).strip()
+    )
+    (skill_dir / "skill.md").write_text(body)
+    return skill_dir
+
+
+def test_load_skill_roundtrip(tmp_path):
+    skill_dir = _write_skill(tmp_path, "demo", body="the body")
+    skill = load_skill(skill_dir)
+    assert skill.name == "demo"
+    assert skill.supported_agents == ["claude", "codex", "kiro"]
+    assert skill.body == "the body"
+
+
+def test_name_must_match_directory(tmp_path):
+    skill_dir = _write_skill(tmp_path, "demo")
+    (skill_dir / "meta.yaml").write_text(
+        "name: other\ndescription: x\ncategory: y\nversion: 1\nsupported-agents: [claude]\n"
+    )
+    with pytest.raises(SkillError, match="does not match"):
+        load_skill(skill_dir)
+
+
+def test_missing_field_raises(tmp_path):
+    skill_dir = tmp_path / "demo"
+    skill_dir.mkdir()
+    (skill_dir / "meta.yaml").write_text("name: demo\n")
+    (skill_dir / "skill.md").write_text("body")
+    with pytest.raises(SkillError, match="missing fields"):
+        load_skill(skill_dir)
+
+
+def test_discover_sorted(tmp_path):
+    _write_skill(tmp_path, "bravo")
+    _write_skill(tmp_path, "alpha")
+    names = [s.name for s in discover_skills(tmp_path)]
+    assert names == ["alpha", "bravo"]

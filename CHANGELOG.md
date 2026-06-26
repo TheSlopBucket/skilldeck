@@ -15,6 +15,8 @@ All notable changes to this project are documented here. The format is based on
   (refactoring.guru catalog) and suggests refactorings.
 - `dependency-review` skill (0.1.0) — reviews dependency/lockfile changes for
   known vulnerabilities and supply-chain risk (OWASP A06, ASVS V15).
+- `test-review` skill (0.1.0) — reviews pending changes for adequate, meaningful
+  test coverage and flags weak, misleading, or flaky tests.
 
 ### Changed
 

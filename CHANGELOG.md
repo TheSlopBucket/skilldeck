@@ -7,6 +7,8 @@ All notable changes to this project are documented here. The format is based on
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-06-27
+
 ### Security
 
 - The Claude adapter now serializes skill frontmatter with `yaml.safe_dump`
